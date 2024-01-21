@@ -1,6 +1,8 @@
 import "phaser";
-import GameScene from "./scenes/GameScene";
+import BoostScene from './scenes/boost.scene';
+import GameScene from "./scenes/game.scene";
 import { SCENE_HEIGHT, SCENE_WIDTH } from './constants';
+import LeaderBoardScene from './scenes/leader-board.scene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -15,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
     antialias: false,
     antialiasGL: false,
   },
-  scene: [GameScene],
+  scene: [GameScene, LeaderBoardScene, BoostScene],
 };
 
 window.addEventListener("load", () => new Phaser.Game(config));
