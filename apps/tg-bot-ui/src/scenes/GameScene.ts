@@ -1,60 +1,42 @@
-import GameInputs from "../inputs/GameInputs";
-import Player from "../gameObjects/Player";
+import { Score } from '../components/score';
+import { SCENE_LEFT_TOP } from '../constants';
 
 export default class GameScene extends Phaser.Scene {
-  private _collisionGroup: Phaser.GameObjects.Group;
-  private _inputs: GameInputs;
-  private _player: Player;
-
   constructor() {
-    super({ key: "game", active: false, visible: false });
+    super({ key: 'game', active: false, visible: false });
   }
 
-  public preload() {
-    this.load.tilemapTiledJSON("tilemap", "./assets/tilemaps/tilemap.json");
+  preload() {
+    this.load.image('background', './assets/images/background.png');
+    this.load.image('arbuz', './assets/images/watermelon.png');
   }
 
-  public create() {
-    const tilemap = this.make.tilemap({ key: "tilemap" });
-    const tileset = tilemap.addTilesetImage("tiles");
-    const tileLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
-      switch (tile.index) {
-        case 2:
-        case 6:
-          tile.setCollision(true);
-          break;
+  create() {
+    const background = this.add.image(...SCENE_LEFT_TOP, 'background')
+      .setScale(0.35, 0.35);
 
-        case 9:
-        case 10:
-          tile.setCollision(false, false, true, false, false);
-          break;
-      }
+    background.postFX.addBlur(2, 0.5, 0.5, 1);
+
+    const arbuz = this.add.image(...SCENE_LEFT_TOP, 'arbuz')
+      .setScale(0.06, 0.06)
+      .setAngle(90)
+      .setInteractive();
+
+    arbuz.postFX.addGlow(0x000000, 4, 1, false, 1);
+
+    const score = new Score(this);
+
+    arbuz.on('pointerdown', () => {
+      this.tweens.add(
+        {
+          targets: arbuz,
+          scaleX: 0.05,
+          scaleY: 0.05,
+          duration: 50,
+          yoyo: true
+        }
+      );
+      score.increment();
     });
-
-    this._collisionGroup = this.add.group();
-
-    this._inputs = new GameInputs(this.input);
-
-    this._player = new Player(this, 32, 192);
-
-    const { widthInPixels, heightInPixels } = tilemap;
-
-    this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64).TILE_BIAS = 8;
-
-    this.physics.add.collider(this.collisionGroup, tileLayer);
-
-    this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels).startFollow(this.player, true);
-  }
-
-  public get collisionGroup() {
-    return this._collisionGroup;
-  }
-
-  public get inputs() {
-    return this._inputs;
-  }
-
-  public get player() {
-    return this._player;
   }
 }

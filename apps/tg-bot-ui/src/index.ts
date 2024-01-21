@@ -1,31 +1,21 @@
 import "phaser";
-import LoaderScene from "./scenes/LoaderScene";
 import GameScene from "./scenes/GameScene";
+import { SCENE_HEIGHT, SCENE_WIDTH } from './constants';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 256,
-  height: 224,
-  zoom: 2,
+  width: SCENE_WIDTH,
+  height: SCENE_HEIGHT,
+  zoom: 1,
   input: {
-    keyboard: true,
-    gamepad: true,
+    mouse: true
   },
   render: {
     pixelArt: true,
     antialias: false,
     antialiasGL: false,
   },
-  physics: {
-    default: "arcade",
-    arcade: {
-      debug: false,
-      gravity: {
-        y: 500,
-      },
-    },
-  },
-  scene: [LoaderScene, GameScene],
+  scene: [GameScene],
 };
 
 window.addEventListener("load", () => new Phaser.Game(config));
