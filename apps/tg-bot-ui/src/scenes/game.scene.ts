@@ -3,6 +3,7 @@ import { BoostButton } from '../components/boost-button';
 import { LeaderBoardButton } from '../components/leader-board-button';
 import { Score } from '../components/score';
 import { SCENE_LEFT_TOP } from '../constants';
+import { App } from '../telegram';
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -25,6 +26,7 @@ export default class GameScene extends Phaser.Scene {
 
     arbuz.addSubscription(() => {
       score.increment();
+      App.sendData(JSON.stringify({ type: 'click' }))
     })
 
     const leaderBoardButton = new LeaderBoardButton(this);
