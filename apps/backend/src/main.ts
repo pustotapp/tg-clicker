@@ -4,8 +4,6 @@ import { ConfigService } from '@nestjs/config'
 
 import { AppModule } from './app/app.module';
 
-console.dir(process.env)
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';

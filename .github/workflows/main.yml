@@ -1,0 +1,38 @@
+name: Main deploy
+on: [push]
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment: production
+    env:
+      TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
+      SERVER_PORT: 3000
+      MONGODB_CONNECTION_URI: ${{ secrets.MONGODB_CONNECTION_URI }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+      - name: Install dependencies
+        run: npm install
+      - name: Build containers
+        run: npx nx container backend --verbose
+        env:
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Stop old container
+        run: >
+          if [[ $(docker ps -aq -f name=backend) -ne 0 ]]; then
+            docker stop $(docker ps -aq -f name=backend)
+            docker rm $(docker ps -aq -f name=backend)
+          fi
+      - name: Run backend container
+        run: >
+          docker run -d -t
+          --name backend
+          -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }}
+          -e SERVER_PORT="${{ env.SERVER_PORT }}"
+          -e TELEGRAM_BOT_KEY="${{ env.TELEGRAM_BOT_KEY }}"
+          -e MONGODB_CONNECTION_URI="${{ secrets.MONGODB_CONNECTION_URI }}"
+          backend:main
